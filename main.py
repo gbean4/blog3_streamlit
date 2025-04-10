@@ -12,4 +12,4 @@ def load_name_data():
 df = load_name_data()
 
 st.title("Fast Food Analysis")
-st.write("This is a Streamlit app for analyzing economic data versus .")
+st.write("This is a Streamlit app for analyzing economic data versus various fast food items.")
