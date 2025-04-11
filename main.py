@@ -61,9 +61,17 @@ with tab1:
 #expander with more info
     with st.expander("See explanation"):
         st.write('''
-            The chart above shows some numbers I picked for you.
-            I rolled actual dice for these, so they're *guaranteed* to
-            be random.
+            This heatmap illustrates the correlations between various economic factors and fast food prices across U.S. states. Several clear trends emerge:
+
+- Strong Relationships Among Fast Food Prices: Fast food items are highly correlated with each other, suggesting that when one item's price increases in a state, others tend to rise as well.
+
+- Income and Cost of Living Matter: There is a strong positive correlation between fast food prices and both average/median income and cost of living. States with higher income levels and living costs generally have more expensive fast food.
+
+- Weaker Links with Broader Economic Indicators: Factors like GDP growth and unemployment rate show minimal correlation with fast food prices, indicating that these broader metrics may not directly impact everyday food costs.
+
+Overall, the analysis suggests that local affordability and purchasing power are more predictive of fast food pricing than general economic performance.
+
+
         ''')
         #st.image("https://static.streamlit.io/examples/dice.jpg")
 
