@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.express as px
+
 
 @st.cache_data
 def load_name_data():
@@ -82,22 +84,98 @@ with tab2:
     st.write("This chart shows the correlation between economic factors and restaurant prices in the selected region.")
     
 
-
-
+us_state_to_abbrev = {
+    "Alabama": "AL",
+    "Alaska": "AK",
+    "Arizona": "AZ",
+    "Arkansas": "AR",
+    "California": "CA",
+    "Colorado": "CO",
+    "Connecticut": "CT",
+    "Delaware": "DE",
+    "Florida": "FL",
+    "Georgia": "GA",
+    "Hawaii": "HI",
+    "Idaho": "ID",
+    "Illinois": "IL",
+    "Indiana": "IN",
+    "Iowa": "IA",
+    "Kansas": "KS",
+    "Kentucky": "KY",
+    "Louisiana": "LA",
+    "Maine": "ME",
+    "Maryland": "MD",
+    "Massachusetts": "MA",
+    "Michigan": "MI",
+    "Minnesota": "MN",
+    "Mississippi": "MS",
+    "Missouri": "MO",
+    "Montana": "MT",
+    "Nebraska": "NE",
+    "Nevada": "NV",
+    "New Hampshire": "NH",
+    "New Jersey": "NJ",
+    "New Mexico": "NM",
+    "New York": "NY",
+    "North Carolina": "NC",
+    "North Dakota": "ND",
+    "Ohio": "OH",
+    "Oklahoma": "OK",
+    "Oregon": "OR",
+    "Pennsylvania": "PA",
+    "Rhode Island": "RI",
+    "South Carolina": "SC",
+    "South Dakota": "SD",
+    "Tennessee": "TN",
+    "Texas": "TX",
+    "Utah": "UT",
+    "Vermont": "VT",
+    "Virginia": "VA",
+    "Washington": "WA",
+    "West Virginia": "WV",
+    "Wisconsin": "WI",
+    "Wyoming": "WY",
+    "District of Columbia": "DC",
+    "American Samoa": "AS",
+    "Guam": "GU",
+    "Northern Mariana Islands": "MP",
+    "Puerto Rico": "PR",
+    "United States Minor Outlying Islands": "UM",
+    "Virgin Islands, U.S.": "VI",
+}
     
-#     state_df = df[df['state'] == state]
-#     numeric_data = state_df.select_dtypes(include='number')
-
-# if numeric_data.shape[0] >= 2:
-#     corr_matrix = numeric_data.corr()
-#     fig = plt.figure(figsize=(10, 6))
-#     sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
-#     plt.title(f"Correlation Between Economic Factors and Restaurant Prices in {state}")
-#     st.pyplot(fig)
-#     st.write("This chart shows the correlation between economic factors and restaurant prices in the selected state.")
-# else:
-#     st.warning("Not enough data to compute correlation for this state.")
+# invert the dictionary
+# abbrev_to_us_state = dict(map(reversed, us_state_to_abbrev.items()))
+df['abbreviation'] = df['state'].map(us_state_to_abbrev)
 
 
+with tab3:
+    food_label_map = {
+    "Domino's Medium Cheese": "DominosMedCheese",
+    "McDonald's Happy Meal": "McDonaldsHappyMeal",
+    "McDonald's Big Mac": "McDonaldsBigMac",
+    "Chick-fil-A Chicken Sandwich": "ChickfilAChickenSandwich",
+    "Taco Bell Combo Meal": "TacoBellComboMeal"
+}
+    st.subheader("State vs Food")
+    food_df = df.copy()
+    food_df['abbreviation'] = df['state'].map(us_state_to_abbrev)
+    food_df = df.drop(columns=['region'])
+    fast_food = st.selectbox("Select a fast food item:", list(food_label_map.keys()))
+    food_col = food_label_map[fast_food]
+    food_df = df[['abbreviation', food_col]].rename(columns={food_col: 'price'})
 
+
+        # Plotly choropleth
+    fig = px.choropleth(
+        food_df,
+        locations='abbreviation',
+        locationmode="USA-states",
+        color='price',
+        scope="usa",
+        color_continuous_scale="reds",
+        labels={'price': f'{fast_food} Price'},
+        title=f"Fast Food Prices by State: {fast_food}",
+    )
   
+    st.plotly_chart(fig)
