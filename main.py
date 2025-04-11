@@ -114,12 +114,15 @@ abbrev_df = load_abbreviations()
 st.title("Fast Food Analysis")
 st.write("This is a Streamlit app for analyzing economic data versus various fast food items.")
 
-tab1, tab2, tab3 = st.tabs(['Overall Correlation', 'Correlation by Region', 'State vs Food'])
+tab1, tab2, tab3, tab4 = st.tabs(['Overall Correlation', 'Correlation by Region', 'State vs Fast Food', 'Economic Factors vs Fast Food'])
 
 with tab1:
     st.subheader("Overall Correlation")
     st.write("Correlation matrix for all states:")
-    matrix = df.set_index("state").corr()
+    # matrix = df.set_index("state").corr()
+    numeric_df = df.select_dtypes(include=["number"])
+    matrix = numeric_df.corr()
+
     fig = plt.figure(figsize=(10,6))
     sns.heatmap(matrix, annot=True, cmap="coolwarm", linewidths=0.5)
     plt.title("Correlation Between Economic Factors and Restaurant Prices")
@@ -184,3 +187,22 @@ with tab3:
     )
   
     st.plotly_chart(fig)
+
+with tab4:
+    food_label_map = {
+    "Domino's Medium Cheese": "DominosMedCheese",
+    "McDonald's Happy Meal": "McDonaldsHappyMeal",
+    "McDonald's Big Mac": "McDonaldsBigMac",
+    "Chick-fil-A Chicken Sandwich": "ChickfilAChickenSandwich",
+    "Taco Bell Combo Meal": "TacoBellComboMeal"
+}
+    st.subheader("Economic Factors vs Fast Food")
+    factors = ['AverageIncome','MedianIncome','CostOfLiving','MinimumWage',	'GDP','GDPGrowth',	'UnemploymentRate']
+    x = st.selectbox("Select an economic factor:", factors)
+    y = st.selectbox("Select a fast food item:", list(food_label_map.keys()), key="fast_food_select")
+
+    y = food_label_map[y]
+
+    chart_df = df[[x, y]].dropna()
+
+    st.scatter_chart(chart_df, x=x, y=y)
