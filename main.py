@@ -107,9 +107,6 @@ def load_abbreviations():
     "United States Minor Outlying Islands": "UM",
     "Virgin Islands, U.S.": "VI",
 }
-    
-# invert the dictionary
-# abbrev_to_us_state = dict(map(reversed, us_state_to_abbrev.items()))
     df['abbreviation'] = df['state'].map(us_state_to_abbrev)
     return df
 abbrev_df = load_abbreviations()
@@ -122,7 +119,6 @@ tab1, tab2, tab3 = st.tabs(['Overall Correlation', 'Correlation by Region', 'Sta
 with tab1:
     st.subheader("Overall Correlation")
     st.write("Correlation matrix for all states:")
-    # overall_df = df.drop(columns=['region'])
     matrix = df.set_index("state").corr()
     fig = plt.figure(figsize=(10,6))
     sns.heatmap(matrix, annot=True, cmap="coolwarm", linewidths=0.5)
