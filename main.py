@@ -13,7 +13,9 @@ def load_name_data():
 
 df = load_name_data()
 
-state_region_map = {
+@st.cache_data
+def load_region():
+    state_region_map = {
     # Northeast
     'Connecticut': 'Northeast', 'Maine': 'Northeast', 'Massachusetts': 'Northeast',
     'New Hampshire': 'Northeast', 'Rhode Island': 'Northeast', 'Vermont': 'Northeast',
@@ -40,59 +42,13 @@ state_region_map = {
     'Washington': 'West'
 }
 
-df['region'] = df['state'].map(state_region_map)
+    df['region'] = df['state'].map(state_region_map)
+    return df
+region_df = load_region()
 
-
-st.title("Fast Food Analysis")
-st.write("This is a Streamlit app for analyzing economic data versus various fast food items.")
-
-tab1, tab2, tab3 = st.tabs(['Overall Correlation', 'Correlation by Region', 'State vs Food'])
-
-with tab1:
-    st.subheader("Overall Correlation")
-    st.write("Correlation matrix for all states:")
-    overall_df = df.drop(columns=['region'])
-    matrix = overall_df.set_index("state").corr()
-    fig = plt.figure(figsize=(10,6))
-    sns.heatmap(matrix, annot=True, cmap="coolwarm", linewidths=0.5)
-    plt.title("Correlation Between Economic Factors and Restaurant Prices")
-    st.pyplot(fig)
-
-#expander with more info
-    with st.expander("See explanation"):
-        st.write('''
-            This heatmap illustrates the correlations between various economic factors and fast food prices across U.S. states. Several clear trends emerge:
-
-- Strong Relationships Among Fast Food Prices: Fast food items are highly correlated with each other, suggesting that when one item's price increases in a state, others tend to rise as well.
-
-- Income and Cost of Living Matter: There is a strong positive correlation between fast food prices and both average/median income and cost of living. States with higher income levels and living costs generally have more expensive fast food.
-
-- Weaker Links with Broader Economic Indicators: Factors like GDP growth and unemployment rate show minimal correlation with fast food prices, indicating that these broader metrics may not directly impact everyday food costs.
-
-Overall, the analysis suggests that local affordability and purchasing power are more predictive of fast food pricing than general economic performance.
-
-
-        ''')
-        #st.image("https://static.streamlit.io/examples/dice.jpg")
-
-
-with tab2:
-    st.subheader("Correlation by Region")
-    region = st.selectbox("Select a region:", df['region'].unique())
-
-    region_data = df[df['region'] == region]
-    numeric_region_data = region_data.select_dtypes(include='number')
-    corr_matrix = numeric_region_data.corr()
-
-
-    fig = plt.figure(figsize=(10,6))
-    sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
-    plt.title(f"Correlation Between Economic Factors and Restaurant Prices in {region}")
-    st.pyplot(fig)
-    st.write("This chart shows the correlation between economic factors and restaurant prices in the selected region.")
-    
-
-us_state_to_abbrev = {
+@st.cache_data
+def load_abbreviations():
+    us_state_to_abbrev = {
     "Alabama": "AL",
     "Alaska": "AK",
     "Arizona": "AZ",
@@ -154,7 +110,55 @@ us_state_to_abbrev = {
     
 # invert the dictionary
 # abbrev_to_us_state = dict(map(reversed, us_state_to_abbrev.items()))
-df['abbreviation'] = df['state'].map(us_state_to_abbrev)
+    df['abbreviation'] = df['state'].map(us_state_to_abbrev)
+    return df
+abbrev_df = load_abbreviations()
+
+st.title("Fast Food Analysis")
+st.write("This is a Streamlit app for analyzing economic data versus various fast food items.")
+
+tab1, tab2, tab3 = st.tabs(['Overall Correlation', 'Correlation by Region', 'State vs Food'])
+
+with tab1:
+    st.subheader("Overall Correlation")
+    st.write("Correlation matrix for all states:")
+    # overall_df = df.drop(columns=['region'])
+    matrix = df.set_index("state").corr()
+    fig = plt.figure(figsize=(10,6))
+    sns.heatmap(matrix, annot=True, cmap="coolwarm", linewidths=0.5)
+    plt.title("Correlation Between Economic Factors and Restaurant Prices")
+    st.pyplot(fig)
+
+#expander with more info
+    with st.expander("See explanation"):
+        st.write('''
+            This heatmap illustrates the correlations between various economic factors and fast food prices across U.S. states. Several clear trends emerge:
+
+- Strong Relationships Among Fast Food Prices: Fast food items are highly correlated with each other, suggesting that when one item's price increases in a state, others tend to rise as well.
+
+- Income and Cost of Living Matter: There is a strong positive correlation between fast food prices and both average/median income and cost of living. States with higher income levels and living costs generally have more expensive fast food.
+
+- Weaker Links with Broader Economic Indicators: Factors like GDP growth and unemployment rate show minimal correlation with fast food prices, indicating that these broader metrics may not directly impact everyday food costs.
+
+Overall, the analysis suggests that local affordability and purchasing power are more predictive of fast food pricing than general economic performance.
+
+
+        ''')
+
+with tab2:
+    st.subheader("Correlation by Region")
+    region = st.selectbox("Select a region:", region_df['region'].unique())
+
+    region_data = region_df[region_df['region'] == region]
+    numeric_region_data = region_data.select_dtypes(include='number')
+    corr_matrix = numeric_region_data.corr()
+
+
+    fig = plt.figure(figsize=(10,6))
+    sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
+    plt.title(f"Correlation Between Economic Factors and Restaurant Prices in {region}")
+    st.pyplot(fig)
+    st.write("This chart shows the correlation between economic factors and restaurant prices in the selected region.")
 
 
 with tab3:
@@ -166,17 +170,14 @@ with tab3:
     "Taco Bell Combo Meal": "TacoBellComboMeal"
 }
     st.subheader("State vs Food")
-    food_df = df.copy()
-    food_df['abbreviation'] = df['state'].map(us_state_to_abbrev)
-    food_df = df.drop(columns=['region'])
     fast_food = st.selectbox("Select a fast food item:", list(food_label_map.keys()))
     food_col = food_label_map[fast_food]
-    food_df = df[['abbreviation', food_col]].rename(columns={food_col: 'price'})
+    abbrev_df = abbrev_df[['abbreviation', food_col]].rename(columns={food_col: 'price'})
 
 
         # Plotly choropleth
     fig = px.choropleth(
-        food_df,
+        abbrev_df,
         locations='abbreviation',
         locationmode="USA-states",
         color='price',
