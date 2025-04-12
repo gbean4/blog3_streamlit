@@ -193,9 +193,6 @@ with tab3:
     )
 
     st.plotly_chart(fig)
-    with st.expander("See explanation"):
-        st.write('Compare the maps above and below. Notice any similarities? What factors or foods seem the most similar or different? These' \
-    'similarities and differences can be used to draw conclusions about factors impact which fast foods.')
 
     factor_df = new_abbrev_df[['abbreviation', factor]].rename(columns={factor: 'value'})
 
@@ -211,7 +208,9 @@ with tab3:
         )
     
     st.plotly_chart(fig2)
-
+    with st.expander("See explanation"):
+        st.write('Compare the maps above and observe any similarities or differences.' \
+    'These observations can be used to draw conclusions about what factors most impact particular fast foods.')
 
 
 
@@ -232,14 +231,13 @@ with tab4:
 
     chart_df = df[[x, y,'state']].dropna()
 
-    # st.scatter_chart(chart_df, x=x, y=y)
     scatter = (
     alt.Chart(chart_df)
     .mark_circle(size=80)
     .encode(
         x=alt.X(x, title=x),
         y=alt.Y(y, title=y),
-        tooltip=["state", x, y]  # 🟡 Add tooltip info here
+        tooltip=["state", x, y] 
     )
     .properties(
         width=600,
@@ -253,4 +251,4 @@ with tab4:
     with st.expander("See explanation"):
         st.write('''
             This scatter plot illustrates the relationship between the selected economic factor and fast food prices. The x-axis represents the economic factor, while the y-axis shows the price of the selected fast food item.
-            Each point represents a state, allowing for a visual comparison of how the economic factor correlates with fast food prices across the U.S.''')
+            As each point is a state, note any outliers or linar trends. Linear trends indicate higher correlation.''')
