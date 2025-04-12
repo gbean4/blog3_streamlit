@@ -210,8 +210,8 @@ with tab3:
     
     st.plotly_chart(fig2)
     with st.expander("See explanation"):
-        st.write('Compare the maps above and observe any similarities or differences. ' \
-    'These observations can be used to draw conclusions about what factors most impact particular fast foods.')
+        st.write('Compare the maps above and observe any similarities or differences. Any similarly colored states indicate a trend that states with high or low economic factors will also have the respective fast food price. ' \
+    'These observations can be used to find patterns regarding which factors most impact particular fast foods.')
 
 
 
