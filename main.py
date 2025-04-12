@@ -3,6 +3,7 @@ import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
+import altair as alt
 
 
 # @st.cache_data
@@ -192,7 +193,8 @@ with tab3:
     )
 
     st.plotly_chart(fig)
-    st.write('Compare the maps above and below. Notice any similarities? What factors or foods seem the most similar or different? These' \
+    with st.expander("See explanation"):
+        st.write('Compare the maps above and below. Notice any similarities? What factors or foods seem the most similar or different? These' \
     'similarities and differences can be used to draw conclusions about factors impact which fast foods.')
 
     factor_df = new_abbrev_df[['abbreviation', factor]].rename(columns={factor: 'value'})
@@ -228,6 +230,27 @@ with tab4:
 
     y = food_label_map[y]
 
-    chart_df = df[[x, y]].dropna()
+    chart_df = df[[x, y,'state']].dropna()
 
-    st.scatter_chart(chart_df, x=x, y=y)
+    # st.scatter_chart(chart_df, x=x, y=y)
+    scatter = (
+    alt.Chart(chart_df)
+    .mark_circle(size=80)
+    .encode(
+        x=alt.X(x, title=x),
+        y=alt.Y(y, title=y),
+        tooltip=["state", x, y]  # 🟡 Add tooltip info here
+    )
+    .properties(
+        width=600,
+        height=400,
+        title=f"{x} vs {y}"
+    )
+    .interactive()
+)
+
+    st.altair_chart(scatter, use_container_width=True)
+    with st.expander("See explanation"):
+        st.write('''
+            This scatter plot illustrates the relationship between the selected economic factor and fast food prices. The x-axis represents the economic factor, while the y-axis shows the price of the selected fast food item.
+            Each point represents a state, allowing for a visual comparison of how the economic factor correlates with fast food prices across the U.S.''')
