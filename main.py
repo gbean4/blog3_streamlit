@@ -110,11 +110,12 @@ def load_abbreviations():
     df['abbreviation'] = df['state'].map(us_state_to_abbrev)
     return df
 abbrev_df = load_abbreviations()
+new_abbrev_df = load_abbreviations()
 
 st.title("Fast Food Analysis")
-st.write("This is a Streamlit app for analyzing economic data versus various fast food items.")
+st.write("This is a Streamlit app for analyzing economic data against the prices of various fast food items.")
 
-tab1, tab2, tab3, tab4 = st.tabs(['Overall Correlation', 'Correlation by Region', 'State vs Fast Food', 'Economic Factors vs Fast Food'])
+tab1, tab2, tab3, tab4 = st.tabs(['Overall Correlation', 'Correlation by Region', 'State vs Fast Food vs Economic Factor', 'Economic Factors vs Fast Food'])
 
 with tab1:
     st.subheader("Overall Correlation")
@@ -161,6 +162,8 @@ with tab2:
 
 
 with tab3:
+    st.subheader("State vs Food vs Economic Factors")
+
     food_label_map = {
     "Domino's Medium Cheese": "DominosMedCheese",
     "McDonald's Happy Meal": "McDonaldsHappyMeal",
@@ -168,8 +171,11 @@ with tab3:
     "Chick-fil-A Chicken Sandwich": "ChickfilAChickenSandwich",
     "Taco Bell Combo Meal": "TacoBellComboMeal"
 }
-    st.subheader("State vs Food")
+    factors = ['AverageIncome','MedianIncome','CostOfLiving','MinimumWage',	'GDP','GDPGrowth',	'UnemploymentRate']
+
     fast_food = st.selectbox("Select a fast food item:", list(food_label_map.keys()))
+    factor = st.selectbox("Select an economic factor:", factors, key="economic_factor")
+
     food_col = food_label_map[fast_food]
     abbrev_df = abbrev_df[['abbreviation', food_col]].rename(columns={food_col: 'price'})
 
@@ -185,8 +191,29 @@ with tab3:
         labels={'price': f'{fast_food} Price'},
         title=f"Fast Food Prices by State: {fast_food}",
     )
-  
+
     st.plotly_chart(fig)
+    
+
+    # factors = ['AverageIncome','MedianIncome','CostOfLiving','MinimumWage',	'GDP','GDPGrowth',	'UnemploymentRate']
+    # factor = st.selectbox("Select an economic factor:", factors, key="economic_factor")
+    factor_df = new_abbrev_df[['abbreviation', factor]].rename(columns={factor: 'value'})
+
+    fig2 = px.choropleth(
+            factor_df,
+            locations='abbreviation',
+            locationmode="USA-states",
+            color='value',
+            scope="usa",
+            color_continuous_scale="reds",
+            labels={'value': f'{factor} value'},
+            title=f"Economic Factor by State: {factor}",
+        )
+    
+    st.plotly_chart(fig2)
+
+
+
 
 with tab4:
     food_label_map = {
