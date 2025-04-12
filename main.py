@@ -120,7 +120,6 @@ tab1, tab2, tab3, tab4 = st.tabs(['Overall Correlation', 'Correlation by Region'
 with tab1:
     st.subheader("Overall Correlation")
     st.write("Correlation matrix for all states:")
-    # matrix = df.set_index("state").corr()
     numeric_df = df.select_dtypes(include=["number"])
     matrix = numeric_df.corr()
 
@@ -193,10 +192,9 @@ with tab3:
     )
 
     st.plotly_chart(fig)
-    
+    st.write('Compare the maps above and below. Notice any similarities? What factors or foods seem the most similar or different? These' \
+    'similarities and differences can be used to draw conclusions about factors impact which fast foods.')
 
-    # factors = ['AverageIncome','MedianIncome','CostOfLiving','MinimumWage',	'GDP','GDPGrowth',	'UnemploymentRate']
-    # factor = st.selectbox("Select an economic factor:", factors, key="economic_factor")
     factor_df = new_abbrev_df[['abbreviation', factor]].rename(columns={factor: 'value'})
 
     fig2 = px.choropleth(
