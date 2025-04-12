@@ -116,7 +116,7 @@ new_abbrev_df = load_abbreviations()
 st.title("Fast Food Analysis")
 st.write("This is a Streamlit app for analyzing economic data against the prices of various fast food items.")
 
-tab1, tab2, tab3, tab4 = st.tabs(['Overall Correlation', 'Correlation by Region', 'State vs Fast Food vs Economic Factor', 'Economic Factors vs Fast Food'])
+tab1, tab2, tab3, tab4 = st.tabs(['Overall Correlation', 'Correlation by Region', 'Fast Food and Economics by State', 'Economic Factors vs Fast Food'])
 
 with tab1:
     st.subheader("Overall Correlation")
@@ -163,7 +163,7 @@ with tab2:
 
 
 with tab3:
-    st.subheader("State vs Food vs Economic Factors")
+    st.subheader("Fast Food and Economics by State")
 
     food_label_map = {
     "Domino's Medium Cheese": "DominosMedCheese",
