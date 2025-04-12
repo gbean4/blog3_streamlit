@@ -158,7 +158,8 @@ with tab2:
     sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
     plt.title(f"Correlation Between Economic Factors and Restaurant Prices in {region}")
     st.pyplot(fig)
-    st.write("This chart shows the correlation between economic factors and restaurant prices in the selected region.")
+    with st.expander("See explanation"):
+        st.write("This chart shows the correlation between economic factors and restaurant prices in the selected region.")
 
 
 with tab3:
