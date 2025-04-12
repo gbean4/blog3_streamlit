@@ -159,7 +159,7 @@ with tab2:
     plt.title(f"Correlation Between Economic Factors and Restaurant Prices in {region}")
     st.pyplot(fig)
     with st.expander("See explanation"):
-        st.write("This chart shows the correlation between economic factors and restaurant prices in the selected region.")
+        st.write("This heatmap shows the correlation between economic factors and restaurant prices in the selected region.")
 
 
 with tab3:
